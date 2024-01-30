@@ -41,7 +41,8 @@ jobs:
         sudo -E apt install -y git \
         build-essential \
         gcc-aarch64-linux-gnu \
-        bc bison cpio flex rsync kmod libssl-dev libncurses-dev
+        bc bison cpio flex rsync kmod libssl-dev libncurses-dev \
+        file binutils
 
 
     - name: Clone source code
@@ -70,11 +71,18 @@ jobs:
         echo -e "$(nproc) thread build."
         make deb-pkg -j$(nproc)
 
+    - name: Repack
+      run: |
+        mkdir output
+        cp *.deb output
+        chmod +x fix-repack-zstd 
+        ./fix-repack-zstd -s $(pwd)/output
+
     - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
         name: OpenStick
-        path: ./*.deb
+        path: output/*.deb
 
 
     - name: Archive target and upload wss
@@ -82,6 +90,6 @@ jobs:
       env:
         OUTPUT_NAME: OpenStick.zip
       run: |
-        zip --password ${{ secrets.ZIP_PASSWORD }}  $OUTPUT_NAME ./*.deb
+        zip --password ${{ secrets.ZIP_PASSWORD }}  $OUTPUT_NAME output/*.deb
         curl -fsSL git.io/file-transfer | sh
         ./transfer wss $OUTPUT_NAME
