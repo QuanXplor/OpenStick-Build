@@ -59,7 +59,7 @@ jobs:
         CROSS_COMPILE: aarch64-linux-gnu-
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE linux-openstick/arch/arm64/configs/msm8916_defconfig
-        cd openwrt && make msm8916_defconfig
+        cd linux-openstick && make msm8916_defconfig
 
     - name: Build firmware
       env: 
