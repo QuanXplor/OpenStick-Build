@@ -60,6 +60,9 @@ jobs:
         cd openwrt && make defconfig
 
     - name: Build firmware
+      env: 
+        ARCH: arm64
+        CROSS_COMPILE: aarch64-linux-gnu-
       working-directory: ./linux-openstick
       run: |
         echo -e "$(nproc) thread build."
